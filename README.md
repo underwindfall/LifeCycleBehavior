@@ -68,4 +68,14 @@ class MainActivity :
         main_text_view.text = message
     }
 }
-``` 
+```
+
+## Step3
+
+It's possible to add more potentially useful functions in ``BaseActivity`
+
+```kotlin
+  @LayoutRes
+  abstract fun getLayout(): Int
+```
+ 
