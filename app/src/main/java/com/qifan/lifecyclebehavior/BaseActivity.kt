@@ -10,6 +10,7 @@ abstract class BaseActivity<V, P>(protected val presenter: P) :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(getLayout())
+        ErrorGuardEvent.register()
     }
 
     override fun onResume() {
@@ -25,5 +26,10 @@ abstract class BaseActivity<V, P>(protected val presenter: P) :
     override fun onPause() {
         super.onPause()
         presenter.dropView()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ErrorGuardEvent.unRegister()
     }
 }
