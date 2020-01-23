@@ -2,15 +2,14 @@ package com.qifan.lifecyclebehavior
 
 import androidx.appcompat.app.AppCompatActivity
 
-abstract class BaseActivity<out T>(private val presenter: BasePresenter<T>) :
-    AppCompatActivity() where T : BaseView {
+abstract class BaseActivity<V, P>(protected val presenter: P) : AppCompatActivity() where V : BaseView, P : BasePresenter<V> {
 
     override fun onResume() {
         super.onResume()
         presenter.takeView(getView())
     }
 
-    abstract fun getView(): T
+    abstract fun getView(): V
 
     override fun onPause() {
         super.onPause()
