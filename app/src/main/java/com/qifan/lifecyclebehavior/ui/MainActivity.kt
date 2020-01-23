@@ -16,17 +16,7 @@ class MainActivity :
         setContentView(R.layout.main_activity)
         main_update_button.setOnClickListener { presenter.getMessage() }
     }
-
-    override fun onResume() {
-        super.onResume()
-        presenter.takeView(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        presenter.dropView()
-    }
-
+    
     override fun displayMessage(message: String) {
         main_text_view.text = message
     }
