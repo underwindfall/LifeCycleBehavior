@@ -13,11 +13,12 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_activity)
         main_update_button.setOnClickListener { presenter.getMessage() }
     }
     
     override fun displayMessage(message: String) {
         main_text_view.text = message
     }
+
+    override fun getLayout(): Int  = R.layout.main_activity
 }
