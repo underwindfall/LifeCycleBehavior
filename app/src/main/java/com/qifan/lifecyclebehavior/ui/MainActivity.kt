@@ -22,22 +22,9 @@ class MainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         main_update_button.setOnClickListener { presenterBehavior.presenter.getMessage() }
-        errorGuardBehavior.onCreate()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        presenterBehavior.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        presenterBehavior.onPause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        errorGuardBehavior.onDestroy()
+        // Subscribe observer to lifecycle
+        lifecycle.addObserver(presenterBehavior)
+        lifecycle.addObserver(errorGuardBehavior)
     }
 
     override fun displayMessage(message: String) {

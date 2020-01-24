@@ -240,3 +240,59 @@ class MainActivity :
     override fun getLayout(): Int = R.layout.main_activity
 }
 ```
+## Step7
+Ok that's good but we still have call specific functions to the place we want.
+Now it's time to add `LifecycleObserver`
+
+```kotlin
+class PresenterBehavior<V, P>(
+    val presenter: P,
+    private val contract: Contract<V>
+) : LifecycleObserver where V : BaseView, P : BasePresenter<V> {
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume() {
+        presenter.takeView(contract.getView())
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun onPause() {
+        presenter.dropView()
+    }
+
+    interface Contract<V> {
+        fun getView(): V
+    }
+}
+```
+
+```kotlin
+class MainActivity :
+    BaseActivity(),
+    MainContract.View,
+    PresenterBehavior.Contract<MainContract.View>,
+    ErrorGuardBehavior.Contract {
+
+    private val presenterBehavior by lazy { PresenterBehavior(MainContractPresenterImpl(), this) }
+
+    private val errorGuardBehavior by lazy { ErrorGuardBehavior(this) }
+
+    override fun getView(): MainContract.View = this
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        main_update_button.setOnClickListener { presenterBehavior.presenter.getMessage() }
+        // Subscribe observer to lifecycle
+        lifecycle.addObserver(presenterBehavior)
+        lifecycle.addObserver(errorGuardBehavior)
+    }
+
+    override fun displayMessage(message: String) {
+        main_text_view.text = message
+    }
+
+    override fun getLayout(): Int = R.layout.main_activity
+}
+
+```
+
