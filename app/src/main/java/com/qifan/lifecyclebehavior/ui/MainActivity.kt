@@ -1,19 +1,43 @@
 package com.qifan.lifecyclebehavior.ui
 
 import android.os.Bundle
-import com.qifan.lifecyclebehavior.PresenterActivity
+import com.qifan.lifecyclebehavior.BaseActivity
+import com.qifan.lifecyclebehavior.ErrorGuardBehavior
+import com.qifan.lifecyclebehavior.PresenterBehavior
 import com.qifan.lifecyclebehavior.R
 import kotlinx.android.synthetic.main.main_activity.*
 
 class MainActivity :
-    PresenterActivity<MainContract.View, MainContract.Presenter>(MainContractPresenterImpl()),
-    MainContract.View {
+    BaseActivity(),
+    MainContract.View,
+    PresenterBehavior.Contract<MainContract.View>,
+    ErrorGuardBehavior.Contract {
+
+    private val presenterBehavior by lazy { PresenterBehavior(MainContractPresenterImpl(), this) }
+
+    private val errorGuardBehavior by lazy { ErrorGuardBehavior(this) }
 
     override fun getView(): MainContract.View = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        main_update_button.setOnClickListener { presenter.getMessage() }
+        main_update_button.setOnClickListener { presenterBehavior.presenter.getMessage() }
+        errorGuardBehavior.onCreate()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenterBehavior.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        presenterBehavior.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        errorGuardBehavior.onDestroy()
     }
 
     override fun displayMessage(message: String) {

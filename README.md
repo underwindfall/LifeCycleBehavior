@@ -1,8 +1,8 @@
 # Purpose
-**Don't repeat yourself** (**DRY**, or sometimes **do not repeat yourself**) is a principle of software development aimed at reducing repetition of software patterns,[1] replacing it with abstractions or using data normalization to avoid redundancy.
+**Don't repeat yourself** (**DRY**, or sometimes **do not repeat yourself**) is a principle of software development aimed at reducing repetition of software patterns, replacing it with abstractions or using data normalization to avoid redundancy.
 
 ## Step1
-**Don't repeat yourself** (**DRY**, or sometimes **do not repeat yourself**) is a principle of software development aimed at reducing repetition of software patterns,[1] replacing it with abstractions or using data normalization to avoid redundancy.
+**Don't repeat yourself** (**DRY**, or sometimes **do not repeat yourself**) is a principle of software development aimed at reducing repetition of software patterns, replacing it with abstractions or using data normalization to avoid redundancy.
 
 ``` kotlin
 class MainActivity : AppCompatActivity(), MainContract.View {
@@ -178,3 +178,65 @@ What a pity !!! :(
 
 It's kind of loss the advantage of `BaseActivity`
 
+# Step6
+Why should we use **Composition Pattern** to delegate feature to each SubActivity ?
+
+```kotlin
+class PresenterBehavior<V, P>(
+    val presenter: P,
+    private val contract: Contract<V>
+) where V : BaseView, P : BasePresenter<V> {
+    fun onResume() {
+        presenter.takeView(contract.getView())
+    }
+
+    fun onPause() {
+        presenter.dropView()
+    }
+
+    interface Contract<V> {
+        fun getView(): V
+    
+```
+
+```kotlin
+class MainActivity :
+    BaseActivity(),
+    MainContract.View,
+    PresenterBehavior.Contract<MainContract.View>,
+    ErrorGuardBehavior.Contract {
+
+    private val presenterBehavior by lazy { PresenterBehavior(MainContractPresenterImpl(), this) }
+
+    private val errorGuardBehavior by lazy { ErrorGuardBehavior(this) }
+
+    override fun getView(): MainContract.View = this
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        main_update_button.setOnClickListener { presenterBehavior.presenter.getMessage() }
+        errorGuardBehavior.onCreate()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenterBehavior.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        presenterBehavior.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        errorGuardBehavior.onDestroy()
+    }
+
+    override fun displayMessage(message: String) {
+        main_text_view.text = message
+    }
+
+    override fun getLayout(): Int = R.layout.main_activity
+}
+```
