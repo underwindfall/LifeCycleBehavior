@@ -1,4 +1,4 @@
-package com.qifan.lifecyclebehavior.ui
+package com.qifan.lifecyclebehavior.ui.main
 
 import com.qifan.lifecyclebehavior.BasePresenter
 import com.qifan.lifecyclebehavior.BaseView
@@ -8,7 +8,9 @@ interface MainContract {
         fun getMessage()
     }
 
+
     interface View : BaseView {
         fun displayMessage(message: String)
+        fun navigateToSecond()
     }
 }

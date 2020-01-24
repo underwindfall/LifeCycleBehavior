@@ -1,10 +1,14 @@
-package com.qifan.lifecyclebehavior.ui
+package com.qifan.lifecyclebehavior.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import com.qifan.lifecyclebehavior.BaseActivity
 import com.qifan.lifecyclebehavior.ErrorGuardBehavior
 import com.qifan.lifecyclebehavior.PresenterBehavior
 import com.qifan.lifecyclebehavior.R
+import com.qifan.lifecyclebehavior.behavior.Behavior
+import com.qifan.lifecyclebehavior.behavior.behaviorFactory
+import com.qifan.lifecyclebehavior.ui.second.SecondActivity
 import kotlinx.android.synthetic.main.main_activity.*
 
 class MainActivity :
@@ -13,9 +17,16 @@ class MainActivity :
     PresenterBehavior.Contract<MainContract.View>,
     ErrorGuardBehavior.Contract {
 
-    private val presenterBehavior by lazy { PresenterBehavior(MainContractPresenterImpl(), this) }
+    @Behavior
+    private val presenterBehavior by behaviorFactory {
+        PresenterBehavior(
+            MainContractPresenterImpl(),
+            this
+        )
+    }
 
-    private val errorGuardBehavior by lazy { ErrorGuardBehavior(this) }
+    @Behavior
+    private val errorGuardBehavior by behaviorFactory { ErrorGuardBehavior(this) }
 
     override fun getView(): MainContract.View = this
 
@@ -25,10 +36,16 @@ class MainActivity :
         // Subscribe observer to lifecycle
         lifecycle.addObserver(presenterBehavior)
         lifecycle.addObserver(errorGuardBehavior)
+        main_text_view.setOnClickListener { navigateToSecond() }
     }
 
     override fun displayMessage(message: String) {
         main_text_view.text = message
+    }
+
+    override fun navigateToSecond() {
+        startActivity(Intent(this, SecondActivity::class.java))
+        finish()
     }
 
     override fun getLayout(): Int = R.layout.main_activity

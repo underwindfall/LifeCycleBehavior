@@ -1,4 +1,4 @@
-package com.qifan.lifecyclebehavior.ui
+package com.qifan.lifecyclebehavior.ui.main
 
 class MainContractPresenterImpl : MainContract.Presenter {
     override var view: MainContract.View? = null
