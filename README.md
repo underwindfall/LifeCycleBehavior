@@ -119,3 +119,62 @@ abstract class BaseActivity<V, P>(protected val presenter: P) :
 ``` 
 We definitely don't want put everything into `BaseActivity`. We argue to find a solution to it.
 
+## Step6 
+### split base activity
+We try to split the responsibility to each abstract activity, so in a way we kind of solve the problem.
+
+Here we are, those who need presenter must be extended from `PresenterActivity`
+
+```kotlin
+abstract class PresenterActivity<V, P>(protected val presenter: P) :
+    ErrorGuardActivity() where V : BaseView, P : BasePresenter<V> {
+
+    override fun onResume() {
+        super.onResume()
+        presenter.takeView(getView())
+    }
+
+    abstract fun getView(): V
+
+    override fun onPause() {
+        super.onPause()
+        presenter.dropView()
+    }
+
+}
+```
+
+```kotlin
+abstract class ErrorGuardActivity : BaseActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        ErrorGuardEvent.register()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ErrorGuardEvent.unRegister()
+    }
+}
+```
+
+```kotlin
+abstract class BaseActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(getLayout())
+    }
+
+    @LayoutRes
+    abstract fun getLayout(): Int
+}
+```
+
+Is there another way to do that ? However we have another issue which is not everyActivity want 
+to have feature `ErrorGuard`, it's basically an optional feature we have.
+
+What a pity !!! :(
+
+It's kind of loss the advantage of `BaseActivity`
+

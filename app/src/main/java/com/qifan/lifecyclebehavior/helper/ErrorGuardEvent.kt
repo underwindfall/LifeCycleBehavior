@@ -1,4 +1,4 @@
-package com.qifan.lifecyclebehavior
+package com.qifan.lifecyclebehavior.helper
 
 import android.util.Log
 
